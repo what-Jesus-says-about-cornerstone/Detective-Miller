@@ -1,0 +1,5 @@
+[user]
+	email = bittorrent-libraries@libraries
+	name = bittorrent-libraries
+
+# git config --local include.path ../.gitconfig
