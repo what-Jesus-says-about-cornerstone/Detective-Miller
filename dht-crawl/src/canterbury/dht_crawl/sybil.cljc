@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.sybil
+(ns canterbury.dht-crawl.sybil
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -18,8 +18,8 @@
    [datagram-socket.runtime.core :as datagram-socket.runtime.core]
    [datagram-socket.protocols :as datagram-socket.protocols]
    [datagram-socket.spec :as datagram-socket.spec]
-   [bittorrent.bencode.runtime.core :as bencode.runtime.core]
-   [bittorrent.dht-crawl.impl :refer [decode-nodes
+   [canterbury.bencode.runtime.core :as bencode.runtime.core]
+   [canterbury.dht-crawl.impl :refer [decode-nodes
                                                 gen-neighbor-id
                                                 encode-nodes
                                                 send-krpc-request-fn

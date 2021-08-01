@@ -1,8 +1,8 @@
-(ns bittorrent.spec
+(ns canterbury.spec
   (:require
    [clojure.spec.alpha :as s]
    [bytes.spec :as bytes.spec]
-   [bittorrent.protocols :as bittorrent.protocols]))
+   [canterbury.protocols :as canterbury.protocols]))
 
 (s/def ::infohash string?)
 (s/def ::infohashBA ::bytes.spec/byte-array)
@@ -11,7 +11,7 @@
 (s/def ::peer-idBA ::bytes.spec/byte-array)
 
 (s/def ::wire #(and
-                (satisfies? bittorrent.protocols/Wire %)
+                (satisfies? canterbury.protocols/Wire %)
                 #?(:clj (instance? clojure.lang.IDeref %))
                 #?(:cljs (satisfies? cljs.core/IDeref %))))
 

@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.sample-infohashes
+(ns canterbury.dht-crawl.sample-infohashes
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -7,7 +7,7 @@
    [clojure.core.async.impl.protocols :refer [closed?]]
    [bytes.runtime.core :as bytes.runtime.core]
    [codec.runtime.core :as codec.runtime.core]
-   [bittorrent.dht-crawl.impl :refer [decode-samples
+   [canterbury.dht-crawl.impl :refer [decode-samples
                                                 decode-nodes
                                                 now]]))
 

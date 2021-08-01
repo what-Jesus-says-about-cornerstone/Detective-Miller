@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.dht
+(ns canterbury.dht-crawl.dht
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -8,7 +8,7 @@
    [clojure.string]
    [bytes.runtime.core :as bytes.runtime.core]
    [codec.runtime.core :as codec.runtime.core]
-   [bittorrent.dht-crawl.impl :refer [hash-key-distance-comparator-fn
+   [canterbury.dht-crawl.impl :refer [hash-key-distance-comparator-fn
                                                 now]]))
 
 #?(:clj (do (set! *warn-on-reflection* true) (set! *unchecked-math* true)))

@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.core
+(ns canterbury.dht-crawl.core
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -22,8 +22,8 @@
    [datagram-socket.protocols :as datagram-socket.protocols]
    [datagram-socket.spec :as datagram-socket.spec]
 
-   [bittorrent.bencode.runtime.core :as bencode.runtime.core]
-   [bittorrent.dht-crawl.impl :refer [hash-key-distance-comparator-fn
+   [canterbury.bencode.runtime.core :as bencode.runtime.core]
+   [canterbury.dht-crawl.impl :refer [hash-key-distance-comparator-fn
                                                 send-krpc-request-fn
                                                 encode-nodes
                                                 decode-nodes
@@ -34,11 +34,11 @@
                                                 fixed-buf-size
                                                 chan-buf]]
 
-   [bittorrent.dht-crawl.dht]
-   [bittorrent.dht-crawl.find-nodes]
-   [bittorrent.dht-crawl.metadata]
-   [bittorrent.dht-crawl.sybil]
-   [bittorrent.dht-crawl.sample-infohashes]))
+   [canterbury.dht-crawl.dht]
+   [canterbury.dht-crawl.find-nodes]
+   [canterbury.dht-crawl.metadata]
+   [canterbury.dht-crawl.sybil]
+   [canterbury.dht-crawl.sample-infohashes]))
 
 #?(:clj (do (set! *warn-on-reflection* true) (set! *unchecked-math* true)))
 
@@ -52,7 +52,7 @@
   [{:as opts
     :keys [data-dir]}]
   (go
-    (let [state-filepath (fs.runtime.core/path-join data-dir "bittorrent.dht-crawl.core.json")
+    (let [state-filepath (fs.runtime.core/path-join data-dir "canterbury.dht-crawl.core.json")
           stateA (atom
                   (merge
                    (let [self-idBA  (codec.runtime.core/hex-decode "a8fb5c14469fc7c46e91679c493160ed3d13be3d") #_(bytes.runtime.core/random-bytes 20)]
@@ -141,7 +141,7 @@
                                      xf-node-for-sampling?)
 
           duration (* 10 60 1000)
-          nodes-bootstrap [{:host "router.bittorrent.com"
+          nodes-bootstrap [{:host "router.canterbury.com"
                             :port 6881}
                            {:host "dht.transmissionbt.com"
                             :port 6881}
@@ -201,11 +201,11 @@
 
       (println ::self-id self-id)
 
-      (bittorrent.dht-crawl.dht/start-routing-table
+      (canterbury.dht-crawl.dht/start-routing-table
        (merge ctx {:routing-table-max-size 128}))
 
 
-      (bittorrent.dht-crawl.dht/start-dht-keyspace
+      (canterbury.dht-crawl.dht/start-dht-keyspace
        (merge ctx {:routing-table-max-size 128}))
 
       (<! (onto-chan! nodes-to-sample|
@@ -276,19 +276,19 @@
       ; very rarely ask bootstrap servers for nodes
       (let [stop| (chan 1)]
         (swap! procsA conj stop|)
-        (bittorrent.dht-crawl.find-nodes/start-bootstrap-query
+        (canterbury.dht-crawl.find-nodes/start-bootstrap-query
          (merge ctx {:stop| stop|})))
 
       ; periodicaly ask nodes for new nodes
       (let [stop| (chan 1)]
         (swap! procsA conj stop|)
-        (bittorrent.dht-crawl.find-nodes/start-dht-query
+        (canterbury.dht-crawl.find-nodes/start-dht-query
          (merge ctx {:stop| stop|})))
 
       ; start sybil
       #_(let [stop| (chan 1)]
           (swap! procsA conj stop|)
-          (bittorrent.dht-crawl.sybil/start
+          (canterbury.dht-crawl.sybil/start
            {:stateA stateA
             :nodes-bootstrap nodes-bootstrap
             :sybils| sybils|
@@ -308,11 +308,11 @@
             (recur))))
 
       ; ask peers directly, politely for infohashes
-      (bittorrent.dht-crawl.sample-infohashes/start-sampling
+      (canterbury.dht-crawl.sample-infohashes/start-sampling
        ctx)
 
       ; discovery
-      (bittorrent.dht-crawl.metadata/start-discovery
+      (canterbury.dht-crawl.metadata/start-discovery
        (merge ctx
               {:infohashes-from-sampling| (tap infohashes-from-sampling|mult (chan (sliding-buffer 100000)))
                :infohashes-from-listening| (tap infohashes-from-listening|mult (chan (sliding-buffer 100000)))
@@ -389,7 +389,7 @@
            count-torrentsA
            count-messages-sybilA]}]
   (let [started-at (now)
-        filepath (fs.runtime.core/path-join data-dir "bittorrent.crawl-log.edn")
+        filepath (fs.runtime.core/path-join data-dir "canterbury.crawl-log.edn")
         _ (fs.runtime.core/remove filepath)
         _ (fs.runtime.core/make-parents filepath)
         writer (fs.runtime.core/writer filepath :append true)
@@ -414,7 +414,7 @@
                        [:nodes-to-sample| (count (chan-buf nodes-to-sample|) )
                         :nodes-from-sampling| (count (chan-buf nodes-from-sampling|))]
                        [:messages [:dht @count-messagesA :sybil @count-messages-sybilA]]
-                       [:sockets @bittorrent.dht-crawl.metadata/count-socketsA]
+                       [:sockets @canterbury.dht-crawl.metadata/count-socketsA]
                        [:routing-table (count (:routing-table state))]
                        [:dht-keyspace (map (fn [[id routing-table]] (count routing-table)) (:dht-keyspace state))]
                        [:routing-table-find-noded  (count (:routing-table-find-noded state))]
@@ -575,48 +575,48 @@
 
   clj -Sdeps '{:deps {org.clojure/clojure {:mvn/version "1.10.3"}
                       org.clojure/core.async {:mvn/version "1.3.618"}
-                      github.cljctools/bytes-jvm {:local/root "./cljctools/bytes-jvm"}
-                      github.cljctools/codec-jvm {:local/root "./cljctools/codec-jvm"}
-                      github.cljctools/core-jvm {:local/root "./cljctools/core-jvm"}
-                      github.cljctools/datagram-socket-jvm {:local/root "./cljctools/datagram-socket-jvm"}
-                      github.cljctools/socket-jvm {:local/root "./cljctools/socket-jvm"}
-                      github.cljctools/fs-jvm {:local/root "./cljctools/fs-jvm"}
-                      github.cljctools/fs-meta {:local/root "./cljctools/fs-meta"}
-                      github.cljctools/transit-jvm {:local/root "./cljctools/transit-jvm"}
-                      github.bittorrent/spec {:local/root "./bittorrent/spec"}
-                      github.bittorrent/bencode {:local/root "./bittorrent/bencode"}
-                      github.bittorrent/wire-protocol {:local/root "./bittorrent/wire-protocol"}
-                      github.bittorrent/dht-crawl {:local/root "./bittorrent/dht-crawl"}}}'
+                      expanse/bytes-jvm {:local/root "./cljctools/bytes-jvm"}
+                      expanse/codec-jvm {:local/root "./cljctools/codec-jvm"}
+                      expanse/core-jvm {:local/root "./cljctools/core-jvm"}
+                      expanse/datagram-socket-jvm {:local/root "./cljctools/datagram-socket-jvm"}
+                      expanse/socket-jvm {:local/root "./cljctools/socket-jvm"}
+                      expanse/fs-jvm {:local/root "./cljctools/fs-jvm"}
+                      expanse/fs-meta {:local/root "./cljctools/fs-meta"}
+                      expanse/transit-jvm {:local/root "./cljctools/transit-jvm"}
+                      canterbury/spec {:local/root "./canterbury/spec"}
+                      canterbury/bencode {:local/root "./canterbury/bencode"}
+                      canterbury/wire-protocol {:local/root "./canterbury/wire-protocol"}
+                      canterbury/dht-crawl {:local/root "./canterbury/dht-crawl"}}}'
 
-  (require '[bittorrent.dht-crawl.core :as dht-crawl.core] :reload-all)
+  (require '[canterbury.dht-crawl.core :as dht-crawl.core] :reload-all)
 
   clj -Sdeps '{:deps {org.clojure/clojurescript {:mvn/version "1.10.844"}
                       org.clojure/core.async {:mvn/version "1.3.618"}
-                      github.cljctools/bytes-meta {:local/root "./cljctools/bytes-meta"}
-                      github.cljctools/bytes-js {:local/root "./cljctools/bytes-js"}
-                      github.cljctools/codec-js {:local/root "./cljctools/codec-js"}
-                      github.cljctools/core-js {:local/root "./cljctools/core-js"}
-                      github.cljctools/datagram-socket-nodejs {:local/root "./cljctools/datagram-socket-nodejs"}
-                      github.cljctools/fs-nodejs {:local/root "./cljctools/fs-nodejs"}
-                      github.cljctools/fs-meta {:local/root "./cljctools/fs-meta"}
-                      github.cljctools/socket-nodejs {:local/root "./cljctools/socket-nodejs"}
-                      github.cljctools/transit-js {:local/root "./cljctools/transit-js"}
+                      expanse/bytes-meta {:local/root "./cljctools/bytes-meta"}
+                      expanse/bytes-js {:local/root "./cljctools/bytes-js"}
+                      expanse/codec-js {:local/root "./cljctools/codec-js"}
+                      expanse/core-js {:local/root "./cljctools/core-js"}
+                      expanse/datagram-socket-nodejs {:local/root "./cljctools/datagram-socket-nodejs"}
+                      expanse/fs-nodejs {:local/root "./cljctools/fs-nodejs"}
+                      expanse/fs-meta {:local/root "./cljctools/fs-meta"}
+                      expanse/socket-nodejs {:local/root "./cljctools/socket-nodejs"}
+                      expanse/transit-js {:local/root "./cljctools/transit-js"}
 
-                      github.bittorrent/spec {:local/root "./bittorrent/spec"}
-                      github.bittorrent/bencode {:local/root "./bittorrent/bencode"}
-                      github.bittorrent/wire-protocol {:local/root "./bittorrent/wire-protocol"}
-                      github.bittorrent/dht-crawl {:local/root "./bittorrent/dht-crawl"}}}' \
+                      canterbury/spec {:local/root "./canterbury/spec"}
+                      canterbury/bencode {:local/root "./canterbury/bencode"}
+                      canterbury/wire-protocol {:local/root "./canterbury/wire-protocol"}
+                      canterbury/dht-crawl {:local/root "./canterbury/dht-crawl"}}}' \
   -M -m cljs.main \
   -co '{:npm-deps {"randombytes" "2.1.0"
                    "bitfield" "4.0.0"
                    "fs-extra" "9.1.0"}
         :install-deps true
-        :analyze-path "./bittorrent/dht-crawl"
+        :analyze-path "./canterbury/dht-crawl"
         :repl-requires [[cljs.repl :refer-macros [source doc find-doc apropos dir pst]]
                         [cljs.pprint :refer [pprint] :refer-macros [pp]]]}' \
   -ro '{:host "0.0.0.0"
         :port 8899}' \
-  --repl-env node --compile bittorrent.dht-crawl.core --repl
+  --repl-env node --compile canterbury.dht-crawl.core --repl
 
   (require
    '[clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
@@ -629,8 +629,8 @@
    '[fs.runtime.core :as fs.runtime.core]
    '[bytes.runtime.core :as bytes.runtime.core]
    '[codec.runtime.core :as codec.runtime.core]
-   '[bittorrent.bencode.runtime.core :as bencode.runtime.core]
-   '[bittorrent.dht-crawl.core :as dht-crawl.core]
+   '[canterbury.bencode.runtime.core :as bencode.runtime.core]
+   '[canterbury.dht-crawl.core :as dht-crawl.core]
    :reload #_:reload-all)
                    
     (dht-crawl.core/start

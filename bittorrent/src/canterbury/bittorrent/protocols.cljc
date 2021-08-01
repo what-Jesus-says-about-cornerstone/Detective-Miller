@@ -1,4 +1,4 @@
-(ns bittorrent.protocols)
+(ns canterbury.protocols)
 
 (defprotocol Wire
   #_IDeref)

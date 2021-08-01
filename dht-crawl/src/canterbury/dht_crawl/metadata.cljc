@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.metadata
+(ns canterbury.dht-crawl.metadata
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -15,10 +15,10 @@
    [socket.runtime.core :as socket.runtime.core]
    [socket.spec :as socket.spec]
    [socket.protocols :as socket.protocols]
-   [bittorrent.bencode.runtime.core :as bencode.runtime.core]
-   [bittorrent.runtime.ut-metadata :as bittorrent.runtime.ut-metadata]
-   [bittorrent.spec :as bittorrent.spec]
-   [bittorrent.dht-crawl.impl :refer [hash-key-distance-comparator-fn
+   [canterbury.bencode.runtime.core :as bencode.runtime.core]
+   [canterbury.runtime.ut-metadata :as canterbury.runtime.ut-metadata]
+   [canterbury.spec :as canterbury.spec]
+   [canterbury.dht-crawl.impl :refer [hash-key-distance-comparator-fn
                                                 decode-nodes
                                                 decode-values
                                                 sorted-map-buffer
@@ -63,13 +63,13 @@
                     (close! evt|)
                     (close! recv|))]
 
-      (bittorrent.runtime.ut-metadata/create
-       {::bittorrent.spec/send| send|
-        ::bittorrent.spec/recv| recv|
-        ::bittorrent.spec/metadata| result|
-        ::bittorrent.spec/ex| ex|
-        ::bittorrent.spec/infohashBA infohashBA
-        ::bittorrent.spec/peer-idBA idBA})
+      (canterbury.runtime.ut-metadata/create
+       {::canterbury.spec/send| send|
+        ::canterbury.spec/recv| recv|
+        ::canterbury.spec/metadata| result|
+        ::canterbury.spec/ex| ex|
+        ::canterbury.spec/infohashBA infohashBA
+        ::canterbury.spec/peer-idBA idBA})
 
       (go
         (when-let [evt (<! evt|)]

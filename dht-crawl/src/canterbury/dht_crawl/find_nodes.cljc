@@ -1,4 +1,4 @@
-(ns bittorrent.dht-crawl.find-nodes
+(ns canterbury.dht-crawl.find-nodes
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -7,7 +7,7 @@
    [clojure.core.async.impl.protocols :refer [closed?]]
    [bytes.runtime.core :as bytes.runtime.core]
    [codec.runtime.core :as codec.runtime.core]
-   [bittorrent.dht-crawl.impl :refer [decode-nodes
+   [canterbury.dht-crawl.impl :refer [decode-nodes
                                                 now]]))
 
 #?(:clj (do (set! *warn-on-reflection* true) (set! *unchecked-math* true)))

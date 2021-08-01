@@ -1,12 +1,12 @@
-(ns bittorrent.runtime.ut-metadata
+(ns canterbury.runtime.ut-metadata
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
-   [bittorrent.protocols :as bittorrent.protocols]
-   [bittorrent.spec :as bittorrent.spec])
+   [canterbury.protocols :as canterbury.protocols]
+   [canterbury.spec :as canterbury.spec])
   (:import
    (java.io ByteArrayOutputStream ByteArrayInputStream PushbackInputStream)
    (bt.metainfo TorrentId)))
@@ -18,10 +18,10 @@
     :keys [::send|
            ::recv|
            ::metadata|
-           ::bittorrent.spec/infohashBA
-           ::bittorrent.spec/peer-idBA]}]
-  {:pre [(s/assert ::bittorrent.spec/create-wire-opts opts)]
-   :post [(s/assert ::bittorrent.spec/wire %)]}
+           ::canterbury.spec/infohashBA
+           ::canterbury.spec/peer-idBA]}]
+  {:pre [(s/assert ::canterbury.spec/create-wire-opts opts)]
+   :post [(s/assert ::canterbury.spec/wire %)]}
   (let [stateV (volatile!
                 {})
 
@@ -33,7 +33,7 @@
         wire
         ^{:type ::wire}
         (reify
-          bittorrent.protocols/Wire
+          canterbury.protocols/Wire
           clojure.lang.IDeref
           (deref [_] @stateV))
 

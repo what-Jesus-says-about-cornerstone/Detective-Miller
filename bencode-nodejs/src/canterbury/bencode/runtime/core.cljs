@@ -1,4 +1,4 @@
-(ns bittorrent.bencode.runtime.core)
+(ns canterbury.bencode.runtime.core)
 
 (def bencode (js/require "bencode"))
 
