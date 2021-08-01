@@ -1,1 +1,1 @@
-we are bittorrent-libraries - bittorrent DHT libraries
+we are canterbury libraries - bittorrent DHT libraries
