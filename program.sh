@@ -18,15 +18,4 @@ main(){
     -M -m canterbury.main
 }
 
-uberjar(){
-  clojure \
-    -X:uberjar hf.depstar/uberjar \
-    :aot true \
-    :jar out/canterbury.standalone.jar \
-    :verbose false \
-    :main-class canterbury.main
-  mkdir -p out/jpackage-input
-  mv out/canterbury.standalone.jar out/jpackage-input/
-}
-
 "$@"
