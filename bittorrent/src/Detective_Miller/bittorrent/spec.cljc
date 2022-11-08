@@ -1,8 +1,8 @@
-(ns canterbury.spec
+(ns Detective-Miller.spec
   (:require
    [clojure.spec.alpha :as s]
    [bytes.spec :as bytes.spec]
-   [canterbury.protocols :as canterbury.protocols]))
+   [Detective-Miller.protocols :as Detective-Miller.protocols]))
 
 (s/def ::infohash string?)
 (s/def ::infohashBA ::bytes.spec/byte-array)
@@ -11,7 +11,7 @@
 (s/def ::peer-idBA ::bytes.spec/byte-array)
 
 (s/def ::wire #(and
-                (satisfies? canterbury.protocols/Wire %)
+                (satisfies? Detective-Miller.protocols/Wire %)
                 #?(:clj (instance? clojure.lang.IDeref %))
                 #?(:cljs (satisfies? cljs.core/IDeref %))))
 

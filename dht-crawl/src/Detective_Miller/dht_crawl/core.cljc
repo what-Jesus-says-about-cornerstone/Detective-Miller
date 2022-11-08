@@ -1,4 +1,4 @@
-(ns canterbury.dht-crawl.core
+(ns Detective-Miller.dht-crawl.core
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -22,8 +22,8 @@
    [datagram-socket.protocols :as datagram-socket.protocols]
    [datagram-socket.spec :as datagram-socket.spec]
 
-   [canterbury.bencode.runtime.core :as bencode.runtime.core]
-   [canterbury.dht-crawl.impl :refer [hash-key-distance-comparator-fn
+   [Detective-Miller.bencode.runtime.core :as bencode.runtime.core]
+   [Detective-Miller.dht-crawl.impl :refer [hash-key-distance-comparator-fn
                                                 send-krpc-request-fn
                                                 encode-nodes
                                                 decode-nodes
@@ -34,11 +34,11 @@
                                                 fixed-buf-size
                                                 chan-buf]]
 
-   [canterbury.dht-crawl.dht]
-   [canterbury.dht-crawl.find-nodes]
-   [canterbury.dht-crawl.metadata]
-   [canterbury.dht-crawl.sybil]
-   [canterbury.dht-crawl.sample-infohashes]))
+   [Detective-Miller.dht-crawl.dht]
+   [Detective-Miller.dht-crawl.find-nodes]
+   [Detective-Miller.dht-crawl.metadata]
+   [Detective-Miller.dht-crawl.sybil]
+   [Detective-Miller.dht-crawl.sample-infohashes]))
 
 #?(:clj (do (set! *warn-on-reflection* true) (set! *unchecked-math* true)))
 
@@ -52,7 +52,7 @@
   [{:as opts
     :keys [data-dir]}]
   (go
-    (let [state-filepath (fs.runtime.core/path-join data-dir "canterbury.dht-crawl.core.json")
+    (let [state-filepath (fs.runtime.core/path-join data-dir "Detective-Miller.dht-crawl.core.json")
           stateA (atom
                   (merge
                    (let [self-idBA  (codec.runtime.core/hex-decode "a8fb5c14469fc7c46e91679c493160ed3d13be3d") #_(bytes.runtime.core/random-bytes 20)]
@@ -141,7 +141,7 @@
                                      xf-node-for-sampling?)
 
           duration (* 10 60 1000)
-          nodes-bootstrap [{:host "router.canterbury.com"
+          nodes-bootstrap [{:host "router.Detective-Miller.com"
                             :port 6881}
                            {:host "dht.transmissionbt.com"
                             :port 6881}
@@ -201,11 +201,11 @@
 
       (println ::self-id self-id)
 
-      (canterbury.dht-crawl.dht/start-routing-table
+      (Detective-Miller.dht-crawl.dht/start-routing-table
        (merge ctx {:routing-table-max-size 128}))
 
 
-      (canterbury.dht-crawl.dht/start-dht-keyspace
+      (Detective-Miller.dht-crawl.dht/start-dht-keyspace
        (merge ctx {:routing-table-max-size 128}))
 
       (<! (onto-chan! nodes-to-sample|
@@ -276,19 +276,19 @@
       ; very rarely ask bootstrap servers for nodes
       (let [stop| (chan 1)]
         (swap! procsA conj stop|)
-        (canterbury.dht-crawl.find-nodes/start-bootstrap-query
+        (Detective-Miller.dht-crawl.find-nodes/start-bootstrap-query
          (merge ctx {:stop| stop|})))
 
       ; periodicaly ask nodes for new nodes
       (let [stop| (chan 1)]
         (swap! procsA conj stop|)
-        (canterbury.dht-crawl.find-nodes/start-dht-query
+        (Detective-Miller.dht-crawl.find-nodes/start-dht-query
          (merge ctx {:stop| stop|})))
 
       ; start sybil
       #_(let [stop| (chan 1)]
           (swap! procsA conj stop|)
-          (canterbury.dht-crawl.sybil/start
+          (Detective-Miller.dht-crawl.sybil/start
            {:stateA stateA
             :nodes-bootstrap nodes-bootstrap
             :sybils| sybils|
@@ -308,11 +308,11 @@
             (recur))))
 
       ; ask peers directly, politely for infohashes
-      (canterbury.dht-crawl.sample-infohashes/start-sampling
+      (Detective-Miller.dht-crawl.sample-infohashes/start-sampling
        ctx)
 
       ; discovery
-      (canterbury.dht-crawl.metadata/start-discovery
+      (Detective-Miller.dht-crawl.metadata/start-discovery
        (merge ctx
               {:infohashes-from-sampling| (tap infohashes-from-sampling|mult (chan (sliding-buffer 100000)))
                :infohashes-from-listening| (tap infohashes-from-listening|mult (chan (sliding-buffer 100000)))
@@ -389,7 +389,7 @@
            count-torrentsA
            count-messages-sybilA]}]
   (let [started-at (now)
-        filepath (fs.runtime.core/path-join data-dir "canterbury.crawl-log.edn")
+        filepath (fs.runtime.core/path-join data-dir "Detective-Miller.crawl-log.edn")
         _ (fs.runtime.core/remove filepath)
         _ (fs.runtime.core/make-parents filepath)
         writer (fs.runtime.core/writer filepath :append true)
@@ -414,7 +414,7 @@
                        [:nodes-to-sample| (count (chan-buf nodes-to-sample|) )
                         :nodes-from-sampling| (count (chan-buf nodes-from-sampling|))]
                        [:messages [:dht @count-messagesA :sybil @count-messages-sybilA]]
-                       [:sockets @canterbury.dht-crawl.metadata/count-socketsA]
+                       [:sockets @Detective-Miller.dht-crawl.metadata/count-socketsA]
                        [:routing-table (count (:routing-table state))]
                        [:dht-keyspace (map (fn [[id routing-table]] (count routing-table)) (:dht-keyspace state))]
                        [:routing-table-find-noded  (count (:routing-table-find-noded state))]
@@ -583,12 +583,12 @@
                       expanse/fs-jvm {:local/root "./cljctools/fs-jvm"}
                       expanse/fs-meta {:local/root "./cljctools/fs-meta"}
                       expanse/transit-jvm {:local/root "./cljctools/transit-jvm"}
-                      canterbury/spec {:local/root "./canterbury/spec"}
-                      canterbury/bencode {:local/root "./canterbury/bencode"}
-                      canterbury/wire-protocol {:local/root "./canterbury/wire-protocol"}
-                      canterbury/dht-crawl {:local/root "./canterbury/dht-crawl"}}}'
+                      Detective-Miller/spec {:local/root "./Detective-Miller/spec"}
+                      Detective-Miller/bencode {:local/root "./Detective-Miller/bencode"}
+                      Detective-Miller/wire-protocol {:local/root "./Detective-Miller/wire-protocol"}
+                      Detective-Miller/dht-crawl {:local/root "./Detective-Miller/dht-crawl"}}}'
 
-  (require '[canterbury.dht-crawl.core :as dht-crawl.core] :reload-all)
+  (require '[Detective-Miller.dht-crawl.core :as dht-crawl.core] :reload-all)
 
   clj -Sdeps '{:deps {org.clojure/clojurescript {:mvn/version "1.10.844"}
                       org.clojure/core.async {:mvn/version "1.3.618"}
@@ -602,21 +602,21 @@
                       expanse/socket-nodejs {:local/root "./cljctools/socket-nodejs"}
                       expanse/transit-js {:local/root "./cljctools/transit-js"}
 
-                      canterbury/spec {:local/root "./canterbury/spec"}
-                      canterbury/bencode {:local/root "./canterbury/bencode"}
-                      canterbury/wire-protocol {:local/root "./canterbury/wire-protocol"}
-                      canterbury/dht-crawl {:local/root "./canterbury/dht-crawl"}}}' \
+                      Detective-Miller/spec {:local/root "./Detective-Miller/spec"}
+                      Detective-Miller/bencode {:local/root "./Detective-Miller/bencode"}
+                      Detective-Miller/wire-protocol {:local/root "./Detective-Miller/wire-protocol"}
+                      Detective-Miller/dht-crawl {:local/root "./Detective-Miller/dht-crawl"}}}' \
   -M -m cljs.main \
   -co '{:npm-deps {"randombytes" "2.1.0"
                    "bitfield" "4.0.0"
                    "fs-extra" "9.1.0"}
         :install-deps true
-        :analyze-path "./canterbury/dht-crawl"
+        :analyze-path "./Detective-Miller/dht-crawl"
         :repl-requires [[cljs.repl :refer-macros [source doc find-doc apropos dir pst]]
                         [cljs.pprint :refer [pprint] :refer-macros [pp]]]}' \
   -ro '{:host "0.0.0.0"
         :port 8899}' \
-  --repl-env node --compile canterbury.dht-crawl.core --repl
+  --repl-env node --compile Detective-Miller.dht-crawl.core --repl
 
   (require
    '[clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
@@ -629,8 +629,8 @@
    '[fs.runtime.core :as fs.runtime.core]
    '[bytes.runtime.core :as bytes.runtime.core]
    '[codec.runtime.core :as codec.runtime.core]
-   '[canterbury.bencode.runtime.core :as bencode.runtime.core]
-   '[canterbury.dht-crawl.core :as dht-crawl.core]
+   '[Detective-Miller.bencode.runtime.core :as bencode.runtime.core]
+   '[Detective-Miller.dht-crawl.core :as dht-crawl.core]
    :reload #_:reload-all)
                    
     (dht-crawl.core/start

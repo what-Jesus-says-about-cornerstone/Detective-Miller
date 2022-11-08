@@ -1,4 +1,4 @@
-(ns canterbury.dht-crawl.metadata
+(ns Detective-Miller.dht-crawl.metadata
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -15,10 +15,10 @@
    [socket.runtime.core :as socket.runtime.core]
    [socket.spec :as socket.spec]
    [socket.protocols :as socket.protocols]
-   [canterbury.bencode.runtime.core :as bencode.runtime.core]
-   [canterbury.runtime.ut-metadata :as canterbury.runtime.ut-metadata]
-   [canterbury.spec :as canterbury.spec]
-   [canterbury.dht-crawl.impl :refer [hash-key-distance-comparator-fn
+   [Detective-Miller.bencode.runtime.core :as bencode.runtime.core]
+   [Detective-Miller.runtime.ut-metadata :as Detective-Miller.runtime.ut-metadata]
+   [Detective-Miller.spec :as Detective-Miller.spec]
+   [Detective-Miller.dht-crawl.impl :refer [hash-key-distance-comparator-fn
                                                 decode-nodes
                                                 decode-values
                                                 sorted-map-buffer
@@ -63,13 +63,13 @@
                     (close! evt|)
                     (close! recv|))]
 
-      (canterbury.runtime.ut-metadata/create
-       {::canterbury.spec/send| send|
-        ::canterbury.spec/recv| recv|
-        ::canterbury.spec/metadata| result|
-        ::canterbury.spec/ex| ex|
-        ::canterbury.spec/infohashBA infohashBA
-        ::canterbury.spec/peer-idBA idBA})
+      (Detective-Miller.runtime.ut-metadata/create
+       {::Detective-Miller.spec/send| send|
+        ::Detective-Miller.spec/recv| recv|
+        ::Detective-Miller.spec/metadata| result|
+        ::Detective-Miller.spec/ex| ex|
+        ::Detective-Miller.spec/infohashBA infohashBA
+        ::Detective-Miller.spec/peer-idBA idBA})
 
       (go
         (when-let [evt (<! evt|)]

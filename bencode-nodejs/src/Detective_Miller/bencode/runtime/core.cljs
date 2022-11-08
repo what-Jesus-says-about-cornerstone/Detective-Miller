@@ -1,4 +1,4 @@
-(ns canterbury.bencode.runtime.core)
+(ns Detective-Miller.bencode.runtime.core)
 
 (def bencode (js/require "bencode"))
 

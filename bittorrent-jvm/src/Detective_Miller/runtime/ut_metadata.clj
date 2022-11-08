@@ -1,12 +1,12 @@
-(ns canterbury.runtime.ut-metadata
+(ns Detective-Miller.runtime.ut-metadata
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
-   [canterbury.protocols :as canterbury.protocols]
-   [canterbury.spec :as canterbury.spec])
+   [Detective-Miller.protocols :as Detective-Miller.protocols]
+   [Detective-Miller.spec :as Detective-Miller.spec])
   (:import
    (java.io ByteArrayOutputStream ByteArrayInputStream PushbackInputStream)
    (bt.metainfo TorrentId)))
@@ -18,10 +18,10 @@
     :keys [::send|
            ::recv|
            ::metadata|
-           ::canterbury.spec/infohashBA
-           ::canterbury.spec/peer-idBA]}]
-  {:pre [(s/assert ::canterbury.spec/create-wire-opts opts)]
-   :post [(s/assert ::canterbury.spec/wire %)]}
+           ::Detective-Miller.spec/infohashBA
+           ::Detective-Miller.spec/peer-idBA]}]
+  {:pre [(s/assert ::Detective-Miller.spec/create-wire-opts opts)]
+   :post [(s/assert ::Detective-Miller.spec/wire %)]}
   (let [stateV (volatile!
                 {})
 
@@ -33,7 +33,7 @@
         wire
         ^{:type ::wire}
         (reify
-          canterbury.protocols/Wire
+          Detective-Miller.protocols/Wire
           clojure.lang.IDeref
           (deref [_] @stateV))
 
